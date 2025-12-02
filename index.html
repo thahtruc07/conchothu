@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Thư — Web Full Chữ</title>
+  <style>
+    :root{
+      --bg1:#0f172a; /* dark navy */
+      --bg2:#0ea5a9; /* teal */
+      --glass: rgba(255,255,255,0.06);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(14,165,169,0.12), transparent),
+                  linear-gradient(135deg,var(--bg1), #071029 60%);
+      color:#fff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      overflow:hidden;
+    }
+
+    /* Big centered hero "Thư" */
+    .hero{
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;
+    }
+    .huge{
+      font-size:clamp(80px, 20vw, 260px);
+      font-weight:900;
+      letter-spacing:0.02em;
+      opacity:0.12;
+      transform:translateZ(0);
+      mix-blend-mode:overlay;
+    }
+
+    /* Scrolling grid of tiles filled with words */
+    .stage{
+      position:relative;
+      height:100vh;
+      width:100%;
+      overflow:auto;
+      padding:32px;
+      display:flex;flex-direction:column;gap:20px;
+    }
+
+    .controls{
+      position:fixed;left:20px;top:20px;z-index:40;backdrop-filter:blur(6px);
+      background:var(--glass);border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.06);
+      color:#e6f6f6;font-size:14px
+    }
+
+    .grid{
+      display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;align-items:stretch;
+      width:100%;
+    }
+
+    .tile{
+      height:110px;display:flex;align-items:center;justify-content:center;border-radius:10px;
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+      box-shadow:0 6px 18px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+      font-weight:800;font-size:28px;color:rgba(255,255,255,0.95);user-select:none;
+      transition:transform .28s cubic-bezier(.2,.9,.3,1), box-shadow .28s;
+    }
+    .tile:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 18px 40px rgba(2,6,23,0.7)}
+
+    footer{position:fixed;right:18px;bottom:18px;font-size:13px;color:rgba(255,255,255,0.7)}
+
+    /* small screens: shrink tiles */
+    @media (max-width:480px){
+      .tile{height:88px;font-size:22px}
+      .controls{left:12px;top:12px;padding:8px}
+    }
+  </style>
+</head>
+<body>
+  <div class="controls" aria-hidden="true">
+    <div>Trang web: <strong>Full chữ — thay hàng ngang</strong></div>
+    <div style="margin-top:6px;font-size:12px;opacity:0.9">Kéo để cuộn • Chạm vào ô để phóng</div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="hero" aria-hidden="true">
+    <div class="huge">Thư</div>
+  </div>
+
+  <footer>✨ Mỗi hàng ngang lặp theo: cái, djt, me, mày, con, chó, thư — Muốn đổi thứ tự thì bảo mình nhé!</footer>
+
+  <script>
+    // Từ trái sang phải trên mỗi hàng sẽ theo danh sách words
+    const words = ['cái', 'djt', 'me', 'mày', 'con', 'chó', 'thư'];
+
+    const grid = document.getElementById('grid');
+    function populate(){
+      grid.innerHTML = '';
+      const tileWidth = 140; // approx
+      const tileHeight = 130;
+      const cols = Math.max(3, Math.floor(window.innerWidth / tileWidth));
+      const rows = Math.max(6, Math.floor(window.innerHeight / tileHeight) * 2);
+
+      for(let r=0; r<rows; r++){
+        for(let c=0; c<cols; c++){
+          const d = document.createElement('div');
+          d.className = 'tile';
+          // mỗi hàng: từ trái sang phải lấy words theo chỉ số c
+          d.textContent = words[c % words.length];
+          d.addEventListener('click', () => {
+            d.style.transition = 'transform .28s';
+            d.style.transform = 'scale(1.18)';
+            setTimeout(()=>{d.style.transform='';},400);
+          });
+          grid.appendChild(d);
+        }
+      }
+    }
+    populate();
+    window.addEventListener('resize', () => { populate(); });
+
+    // Small decorative animation for the huge hero word
+    const huge = document.querySelector('.huge');
+    let t = 0;
+    function wobble(){
+      t += 0.01;
+      huge.style.transform = `scale(${1+ Math.sin(t)/60}) translateZ(0)`;
+      requestAnimationFrame(wobble);
+    }
+    wobble();
+  </script>
+</body>
+</html>
